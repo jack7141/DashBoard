@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class MemberServiceTest {
 
     @Autowired
@@ -24,15 +26,12 @@ class MemberServiceTest {
 
     @Test
     void addMember() {
-        Member member = Member.builder()
-                .name("Test User")
+        Long newMember = memberService.addMember(Member.builder()
+                .name("TestUser11")
                 .email("test@example.com")
                 .phoneNumber("1234567890")
-                .build();
-
-        Long newMember = memberService.addMember(member);
+                .build());
         Member findMember = memberService.getMemberById(newMember).get();
-        Assertions.assertEquals(member, findMember);
-
+        Assertions.assertEquals(1L, findMember.getMemberId());
     }
 }

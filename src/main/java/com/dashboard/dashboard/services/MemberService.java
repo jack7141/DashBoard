@@ -4,6 +4,7 @@ import com.dashboard.dashboard.domain.Member;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -11,6 +12,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class MemberService {
+
+    @Autowired
     private DataJPAMemberRepository dataJPAMemberRepository;
 
     public Long addMember(Member member) {
