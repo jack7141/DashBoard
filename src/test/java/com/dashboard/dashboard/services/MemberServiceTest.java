@@ -1,10 +1,7 @@
 package com.dashboard.dashboard.services;
 
 import com.dashboard.dashboard.domain.Member;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -25,6 +22,7 @@ class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("서비스 레이어 회원가입 테스트")
     void addMember() {
         Long newMember = memberService.addMember(Member.builder()
                 .name("TestUser11")

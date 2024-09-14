@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,5 +39,55 @@ class DataJPAMemberRepositoryTest {
         assertThat(member).isNotNull();
         assertThat(member.getMemberId()).isNotNull();
         assertThat(member.getName()).isEqualTo("Test User");
+    }
+
+
+    @Test
+    void findByMemberId() {
+        Member findMember = memberRepository.findByMemberId(1L).get();
+        Assertions.assertEquals("test@example.com", findMember.getEmail());
+
+    }
+
+    @Test
+    void findByEmail() {
+        Member findMember = memberRepository.findByEmail("test@example.com").get();
+        Assertions.assertEquals("test@example.com", findMember.getEmail());
+    }
+
+    @Test
+    void findByPhoneNumber() {
+        Member findMember = memberRepository.findByPhoneNumber("1234567890").get();
+        Assertions.assertEquals("1234567890", findMember.getPhoneNumber());
+    }
+
+    @Test
+    @DisplayName("이메일과 전화번호로 회원 찾기 테스트")
+    void findByEmailAndPhoneNumber() {
+        // Given: 테스트용 회원 생성 및 저장
+        Member member = Member.builder()
+                .name("TestUser123123")
+                .email("test@exampl12312331e.com")
+                .phoneNumber("1234567890")
+                .build();
+
+        memberRepository.save(member);
+
+        // When: 이메일과 전화번호로 회원 조회
+        Optional<Member> optionalMember = memberRepository.findByEmailAndPhoneNumber("test@exampl12312331e.com", "1234567890");
+
+        // Then: 조회된 회원이 존재하고, 정보가 일치하는지 확인
+        assertTrue(optionalMember.isPresent(), "회원이 존재해야 합니다.");
+        Member findMember = optionalMember.get();
+        assertEquals("test@exampl12312331e.com", findMember.getEmail());
+        assertEquals("1234567890", findMember.getPhoneNumber());
+    }
+
+    @Test
+    void findByPhoneNumberAndEmail() {
+    }
+
+    @Test
+    void findByName() {
     }
 }
