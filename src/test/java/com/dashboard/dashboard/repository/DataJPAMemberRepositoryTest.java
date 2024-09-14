@@ -84,7 +84,14 @@ class DataJPAMemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("전화번호와 이메일로 회원 찾기 테스트")
     void findByPhoneNumberAndEmail() {
+        Optional<Member> optionalMember = memberRepository.findByPhoneNumberAndEmail("1234567890", "test@example.com");
+        assertTrue(optionalMember.isPresent(), "회원이 존재해야 합니다.");
+
+        Member findMember = optionalMember.get();
+        assertEquals("test@example.com", findMember.getEmail());
+        assertEquals("1234567890", findMember.getPhoneNumber());
     }
 
     @Test
