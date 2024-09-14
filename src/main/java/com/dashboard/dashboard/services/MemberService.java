@@ -28,6 +28,7 @@ public class MemberService {
         });
     }
 
+
     public Optional<Member> getMemberById(Long memberId) {
         return dataJPAMemberRepository.findById(memberId);
     }
