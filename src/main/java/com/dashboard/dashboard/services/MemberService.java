@@ -39,34 +39,26 @@ public class MemberService {
     }
 
 
-    public Optional<Member> getMemberById(Long memberId) {
-        return dataJPAMemberRepository.findById(memberId);
+    // Entity -> DTO
+    public Optional<memberDTO> getMemberById(Long memberId) {
+        return dataJPAMemberRepository.findById(memberId).map(memberDTO::toDTO);
     }
 
-    public Optional<Member> getMemberByUserName(String userName) {
-        return dataJPAMemberRepository.findByName(userName);
+    // Entity -> DTO
+    public Optional<memberDTO> getMemberByUserName(String userName) {
+        Optional<Member> optionalMember = dataJPAMemberRepository.findByName(userName);
+
+        if (optionalMember.isPresent()) {
+            Member findMember = optionalMember.get();
+            return Optional.of(memberDTO.toDTO(findMember));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public List<memberDTO> getMembers() {
-//        return dataJPAMemberRepository.findAll();
         List<Member> members = dataJPAMemberRepository.findAll();
-
         // Member 엔티티 리스트를 MemberDTO 리스트로 변환
-        return members.stream()
-                .map(member -> memberDTO.builder()
-                        .memberId(member.getMemberId())
-                        .name(member.getName())
-                        .email(member.getEmail())
-                        .phoneNumber(member.getPhoneNumber())
-                        .createAt(member.getCreateDate())  // LocalDateTime을 그대로 사용
-                        .details(member.getDetails().stream()
-                                .map(detail -> memberDetailDTO.builder()
-                                        .description(detail.getDescription())
-                                        // Pk 객체의 type 필드에 접근
-                                        .type(detail.getPk().getType())
-                                        .build())
-                                .collect(Collectors.toList()))  // List<memberDetailDTO>로 변환
-                        .build())
-                .collect(Collectors.toList());
+        return memberDTO.toDTO(members);
     }
 }
