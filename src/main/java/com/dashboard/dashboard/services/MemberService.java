@@ -17,7 +17,7 @@ public class MemberService {
     private DataJPAMemberRepository dataJPAMemberRepository;
 
     public Long addMember(Member member) {
-        validateDuplicateUserName(member);
+        validateDuplicateEmail(member);
         dataJPAMemberRepository.save(member);
         return member.getMemberId();
     }
@@ -25,6 +25,12 @@ public class MemberService {
     private void validateDuplicateUserName(Member member) {
         dataJPAMemberRepository.findByName(member.getName()).ifPresent(m -> {
             throw new IllegalStateException("Member name is already in use");
+        });
+    }
+
+    private void validateDuplicateEmail(Member member) {
+        dataJPAMemberRepository.findByEmail(member.getEmail()).ifPresent(m -> {
+            throw new IllegalStateException("Member email is already in use");
         });
     }
 

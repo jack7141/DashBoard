@@ -49,9 +49,44 @@ class MemberServiceTest {
     @Test
     @DisplayName("서비스 레이어 중복 회원가입 테스트")
     void DuplicateMember() {
-        Member member = new Member();
-        member.setName("TestUser11");
-        assertThrows(IllegalStateException.class, () -> memberService.addMember(member)); // 1번 방법
+        Member newMember = Member.builder()
+                .name("TestUser11")
+                .email("test@example.com")
+                .phoneNumber("1234567890")
+                .build();
+        assertThrows(IllegalStateException.class, () -> memberService.addMember(newMember)); // 1번 방법
+    }
+
+    @Test
+    @DisplayName("서비스 레이어 Member Id 조회 테스트")
+    void getMemberById() {
+        // Given
+        long memberId = 1;
+
+        // When
+        Member findMember = memberService.getMemberById(memberId).orElse(null);
+
+        // Then
+        Assertions.assertEquals(findMember.getMemberId(), memberId, "회원 ID가 일치해야 합니다.");
+        Assertions.assertEquals(findMember.getName(), "TestUser11", "회원 이름이 일치해야 합니다.");
+        Assertions.assertEquals(findMember.getEmail(), "test@example.com", "회원 이메일이 일치해야 합니다.");
+    }
+
+    @Test
+    @DisplayName("서비스 레이어 Member 이름 조회 테스트")
+    void getMemberByUserName() {
+        // Given
+        long memberId = 1;
+        String memberName = "TestUser11";
+        String memberEmail = "test@example.com";
+
+        // When
+        Member findMember = memberService.getMemberByUserName(memberName).orElse(null);
+
+        // Then
+        Assertions.assertEquals(findMember.getMemberId(), memberId, "회원 ID가 일치해야 합니다.");
+        Assertions.assertEquals(findMember.getName(), memberName, "회원 이름이 일치해야 합니다.");
+        Assertions.assertEquals(findMember.getEmail(), memberEmail, "회원 이메일이 일치해야 합니다.");
 
     }
 }
