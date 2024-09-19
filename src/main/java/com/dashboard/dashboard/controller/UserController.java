@@ -1,6 +1,9 @@
 package com.dashboard.dashboard.controller;
 
 import com.dashboard.dashboard.domain.Member;
+import com.dashboard.dashboard.dto.DataResponseDTO;
+import com.dashboard.dashboard.dto.ResponseDTO;
+import com.dashboard.dashboard.dto.memberDTO;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
 import com.dashboard.dashboard.services.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +20,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,8 +55,12 @@ public class UserController {
     ) {
         Member member = memberService.getMemberById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
-
         return ResponseEntity.ok(member);
+    }
 
+    @GetMapping("")
+    public  DataResponseDTO<Object> getUsers() {
+        List<memberDTO> members = memberService.getMembers();
+        return DataResponseDTO.of(members);
     }
 }

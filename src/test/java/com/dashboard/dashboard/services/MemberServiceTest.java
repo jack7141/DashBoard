@@ -28,9 +28,10 @@ class MemberServiceTest {
     void addMember() {
         // Given
         String randomName = UUID.randomUUID().toString();
+        String memberEmail = "test123@example.com";
         Member newMember = Member.builder()
                 .name(randomName)
-                .email("test@example.com")
+                .email(memberEmail)
                 .phoneNumber("1234567890")
                 .build();
 

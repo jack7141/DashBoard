@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,7 @@ public class Member {
     private LocalDateTime createDate;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
-    private List<MemberDetail> details;
+    private List<MemberDetail> details = new ArrayList<>();
 
     @Builder
     public Member(String name, String email, String phoneNumber, LocalDateTime createDate) {

@@ -22,6 +22,8 @@ public class MemberDetail {
     private Member member;
 
     @Embeddable
+    @Getter
+    @Setter
     public static class Pk implements Serializable {
 
         @Column(name = "member_id")
