@@ -21,7 +21,7 @@ public class MemberDetail {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Builder

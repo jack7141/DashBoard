@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -68,10 +69,9 @@ public class UserController {
     }
 
     @PostMapping("")
-    public DataResponseDTO<memberDTO> createUser(
-            @RequestBody memberDTO createUserDTO
-    ) {
-        memberDTO newMember = memberService.add(createUserDTO);
-        return DataResponseDTO.of(newMember);
+    public ResponseEntity<DataResponseDTO<memberDTO>> createUser(@RequestBody memberDTO createUserDTO) {
+        memberDTO newMember = memberService.register(createUserDTO);
+        return ResponseEntity.ok(DataResponseDTO.of(newMember, "회원 가입이 성공적으로 완료되었습니다."));
     }
+
 }

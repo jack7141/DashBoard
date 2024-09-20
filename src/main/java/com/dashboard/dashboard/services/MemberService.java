@@ -3,6 +3,7 @@ package com.dashboard.dashboard.services;
 import com.dashboard.dashboard.domain.Member;
 import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
+import com.exceptons.DuplicateMemberException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,18 @@ public class MemberService {
     @Autowired
     private DataJPAMemberRepository dataJPAMemberRepository;
 
-    public memberDTO add(memberDTO memberDTO) {
+    public memberDTO register(memberDTO memberDTO) {
         Member newMember = memberDTO.toEntity();
-        validateDuplicateEmail(newMember);
+        validateDuplicateEmailAndPhoneNumber(newMember);
         Member savedMember = dataJPAMemberRepository.save(newMember);
         return memberDTO.of(savedMember);
     }
 
-    private void validateDuplicateEmail(Member member) {
-        dataJPAMemberRepository.findByEmail(member.getEmail()).ifPresent(m -> {
-            throw new IllegalStateException("중복된 이메일 회원 가입입니다.");
-        });
+    private void validateDuplicateEmailAndPhoneNumber(Member member) {
+        if (dataJPAMemberRepository.existsByEmailOrMemberDetail_PhoneNumber(
+                member.getEmail(), member.getMemberDetail().getPhoneNumber())) {
+            throw new DuplicateMemberException("중복된 이메일 또는 핸드폰 번호로 회원 가입을 시도했습니다.");
+        }
     }
 
     public Optional<memberDTO> getMemberById(Long memberId) {
