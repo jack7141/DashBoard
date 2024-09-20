@@ -1,4 +1,4 @@
-package com.dashboard.dashboard.dto;
+package com.dashboard.dashboard.dto.member;
 
 import com.dashboard.dashboard.domain.MemberDetail;
 import lombok.AllArgsConstructor;

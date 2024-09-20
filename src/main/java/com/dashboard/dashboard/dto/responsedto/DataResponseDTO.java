@@ -1,4 +1,4 @@
-package com.dashboard.dashboard.dto;
+package com.dashboard.dashboard.dto.responsedto;
 
 import lombok.Getter;
 

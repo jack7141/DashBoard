@@ -1,8 +1,7 @@
 package com.dashboard.dashboard.services;
 
 import com.dashboard.dashboard.domain.Member;
-import com.dashboard.dashboard.dto.memberDTO;
-import com.dashboard.dashboard.dto.memberDetailDTO;
+import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

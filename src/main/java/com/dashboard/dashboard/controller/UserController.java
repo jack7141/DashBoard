@@ -1,7 +1,7 @@
 package com.dashboard.dashboard.controller;
 
-import com.dashboard.dashboard.dto.DataResponseDTO;
-import com.dashboard.dashboard.dto.memberDTO;
+import com.dashboard.dashboard.dto.responsedto.DataResponseDTO;
+import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.services.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

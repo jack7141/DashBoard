@@ -1,4 +1,4 @@
-package com.dashboard.dashboard.dto;
+package com.dashboard.dashboard.dto.member;
 
 import com.dashboard.dashboard.domain.Member;
 import com.dashboard.dashboard.domain.MemberDetail;
@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.stream.Collectors;
 /*
 * @AllArgsConstructor가 없으면 빌더 패턴에서 문제가 발생하는 이유는
 * @Builder 애노테이션이 @AllArgsConstructor와 함께 사용되어 모든 필드를 초기화하는 생성자를 필요로 하기 때문입니다.

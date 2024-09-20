@@ -1,4 +1,4 @@
-package com.dashboard.dashboard.dto;
+package com.dashboard.dashboard.dto.responsedto;
 
 public class ErrorResponseDTO extends ResponseDTO{
     public ErrorResponseDTO(Integer code, String message) {
