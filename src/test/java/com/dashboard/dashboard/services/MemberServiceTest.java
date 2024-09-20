@@ -1,6 +1,6 @@
 package com.dashboard.dashboard.services;
 
-import com.dashboard.dashboard.domain.Member;
+import com.dashboard.dashboard.domain.member.Member;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

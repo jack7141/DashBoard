@@ -1,7 +1,11 @@
-package com.dashboard.dashboard.domain;
+package com.dashboard.dashboard.domain.member;
 
+import com.dashboard.dashboard.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -22,6 +26,9 @@ public class Member {
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MemberDetail memberDetail;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
     public Member(Long memberId, String name, String email) {

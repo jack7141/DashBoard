@@ -1,6 +1,6 @@
 package com.dashboard.dashboard.services;
 
-import com.dashboard.dashboard.domain.Member;
+import com.dashboard.dashboard.domain.member.Member;
 import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
 import com.exceptons.DuplicateMemberException;

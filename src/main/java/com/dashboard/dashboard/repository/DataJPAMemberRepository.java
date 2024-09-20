@@ -1,7 +1,6 @@
 package com.dashboard.dashboard.repository;
 
-import com.dashboard.dashboard.domain.Member;
-import com.dashboard.dashboard.domain.MemberDetail;
+import com.dashboard.dashboard.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +18,7 @@ public interface DataJPAMemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberDetail_PhoneNumber(String phoneNumber);
 
     boolean existsByEmailOrMemberDetail_PhoneNumber(String email, String phoneNumber);
+
+
+
 }

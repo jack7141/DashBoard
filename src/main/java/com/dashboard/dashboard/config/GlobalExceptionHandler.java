@@ -2,6 +2,7 @@ package com.dashboard.dashboard.config;
 
 import com.dashboard.dashboard.dto.responsedto.ErrorResponseDTO;
 import com.exceptons.DuplicateMemberException;
+import com.exceptons.MemberNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleDuplicateMemberException(DuplicateMemberException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponseDTO.of(409, e.getMessage()));
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDuplicateMemberException(MemberNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.of(404, e.getMessage()));
     }
 }

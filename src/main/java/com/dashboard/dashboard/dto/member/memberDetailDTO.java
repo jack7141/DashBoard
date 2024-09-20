@@ -1,6 +1,6 @@
 package com.dashboard.dashboard.dto.member;
 
-import com.dashboard.dashboard.domain.MemberDetail;
+import com.dashboard.dashboard.domain.member.MemberDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

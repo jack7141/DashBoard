@@ -1,6 +1,6 @@
 package com.dashboard.dashboard.repository;
 
-import com.dashboard.dashboard.domain.Member;
+import com.dashboard.dashboard.domain.member.Member;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

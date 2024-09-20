@@ -1,4 +1,4 @@
-package com.dashboard.dashboard.domain;
+package com.dashboard.dashboard.domain.member;
 
 import jakarta.persistence.*;
 import lombok.*;
