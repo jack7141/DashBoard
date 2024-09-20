@@ -1,5 +1,6 @@
 package com.dashboard.dashboard.domain;
 
+import com.dashboard.dashboard.dto.memberDTO;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class Member {
     @Column(name = "create_dt")
     private LocalDateTime createDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member", orphanRemoval = true)
     private List<MemberDetail> details = new ArrayList<>();
 
     @Builder

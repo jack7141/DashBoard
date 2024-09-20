@@ -1,11 +1,15 @@
 package com.dashboard.dashboard.dto;
 
 import com.dashboard.dashboard.domain.MemberDetail;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor  // 기본 생성자 추가
 public class memberDetailDTO {
     private String description;
     private String type;

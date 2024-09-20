@@ -55,13 +55,12 @@ public class UserController {
         return DataResponseDTO.of(members);
     }
 
-//    @GetMapping("/{userName}")
-//    public DataResponseDTO<Object> getUser(
-//            @Parameter(description = "조회할 사용자의 아이디", example = "1")
-//            @PathVariable(name = "userName", required = true) String userName
-//        ) {
-//        memberDTO member = memberService.getMemberByUserName(userName).orElse(null);;
-//        return DataResponseDTO.of(member);
-//    }
+    @PostMapping("")
+    public DataResponseDTO<Object> createUser(
+            @RequestBody memberDTO createUserDTO
+    ) {
+        memberDTO newMember = memberService.add(createUserDTO);
+        return DataResponseDTO.of(newMember);
+    }
 
 }

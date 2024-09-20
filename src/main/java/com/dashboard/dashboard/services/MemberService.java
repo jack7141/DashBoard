@@ -26,10 +26,12 @@ public class MemberService {
         return member.getMemberId();
     }
 
-    private void validateDuplicateUserName(Member member) {
-        dataJPAMemberRepository.findByName(member.getName()).ifPresent(m -> {
-            throw new IllegalStateException("Member name is already in use");
-        });
+    public memberDTO add(memberDTO memberDTO) {
+        // DTO -> Entity
+        Member newMember = memberDTO.toEntity();
+        validateDuplicateEmail(newMember);
+        Member member = dataJPAMemberRepository.save(newMember);
+        return memberDTO.of(member);
     }
 
     private void validateDuplicateEmail(Member member) {
@@ -41,7 +43,7 @@ public class MemberService {
 
     // Entity -> DTO
     public Optional<memberDTO> getMemberById(Long memberId) {
-        return dataJPAMemberRepository.findById(memberId).map(memberDTO::toDTO);
+        return dataJPAMemberRepository.findById(memberId).map(memberDTO::of);
     }
 
     // Entity -> DTO
@@ -50,15 +52,16 @@ public class MemberService {
 
         if (optionalMember.isPresent()) {
             Member findMember = optionalMember.get();
-            return Optional.of(memberDTO.toDTO(findMember));
+            return Optional.of(memberDTO.of(findMember));
         } else {
             return Optional.empty();
         }
     }
 
+
     public List<memberDTO> getMembers() {
         List<Member> members = dataJPAMemberRepository.findAll();
         // Member 엔티티 리스트를 MemberDTO 리스트로 변환
-        return memberDTO.toDTO(members);
+        return memberDTO.of(members);
     }
 }
