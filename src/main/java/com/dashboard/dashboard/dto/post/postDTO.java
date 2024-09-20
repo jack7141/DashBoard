@@ -24,6 +24,7 @@ public class postDTO {
 
     public static postDTO of(Post post) {
         return postDTO.builder()
+                .author(post.getAuthor().getMemberId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();

@@ -33,6 +33,7 @@ public class PostService {
         return postDTO.of(savedPost);
     }
 
+
     private Member findMemberOrThrow(Long authorId) {
         return dataJPAMemberRepository.findByMemberId(authorId)
                 .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다. 회원 아이디: " + authorId));
