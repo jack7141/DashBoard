@@ -1,12 +1,12 @@
 package com.dashboard.dashboard.dto;
 
 import com.dashboard.dashboard.domain.Member;
+import com.dashboard.dashboard.domain.MemberDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 /*
@@ -24,46 +24,38 @@ import java.util.stream.Collectors;
 *
 * */
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class memberDTO {
     private Long memberId;
     private String name;
     private String email;
-    private String phoneNumber;
-    private LocalDateTime createAt;
-    private List<memberDetailDTO> details;
+    private memberDetailDTO memberDetail;
 
-    // Member 엔티티를 DTO로 변환하는 정적 메서드
     public static memberDTO of(Member member) {
         return memberDTO.builder()
                 .memberId(member.getMemberId())
                 .name(member.getName())
                 .email(member.getEmail())
-                .phoneNumber(member.getPhoneNumber())
-                .createAt(member.getCreateDate())
-                .details(member.getDetails().stream()
-                        .map(memberDetailDTO::toDTO)  // MemberDetail -> MemberDetailDTO 변환
-                        .collect(Collectors.toList()))
+                .memberDetail(member.getMemberDetail() != null ? memberDetailDTO.of(member.getMemberDetail()) : null)
                 .build();
     }
 
-    // List<Member>를 List<memberDTO>로 변환하는 정적 메서드
-    public static List<memberDTO> of(List<Member> members) {
-        return members.stream()
-                .map(memberDTO::of)
-                .collect(Collectors.toList());
-    }
 
-    // DTO를 Member 엔티티로 변환하는 메서드
     public Member toEntity() {
-        return Member.builder()
+        Member member = Member.builder()
+                .memberId(this.memberId)
                 .name(this.name)
                 .email(this.email)
-                .phoneNumber(this.phoneNumber)
-                .createDate(this.createAt)
                 .build();
+
+        if (this.memberDetail != null) {
+            MemberDetail detail = this.memberDetail.toEntity();
+            member.setMemberDetail(detail);
+        }
+
+        return member;
     }
 
 }

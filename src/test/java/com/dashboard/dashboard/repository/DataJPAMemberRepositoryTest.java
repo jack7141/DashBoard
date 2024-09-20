@@ -57,7 +57,7 @@ class DataJPAMemberRepositoryTest {
 
     @Test
     void findByPhoneNumber() {
-        Member findMember = memberRepository.findByPhoneNumber("1234567890").get();
+        Member findMember = memberRepository.findByMemberDetail_PhoneNumber("1234567890").get();
         Assertions.assertEquals("1234567890", findMember.getPhoneNumber());
     }
 

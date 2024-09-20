@@ -5,7 +5,6 @@ import com.dashboard.dashboard.dto.memberDTO;
 import com.dashboard.dashboard.dto.memberDetailDTO;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
 import jakarta.transaction.Transactional;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +19,11 @@ public class MemberService {
     @Autowired
     private DataJPAMemberRepository dataJPAMemberRepository;
 
-    public Long addMember(Member member) {
-        validateDuplicateEmail(member);
-        dataJPAMemberRepository.save(member);
-        return member.getMemberId();
-    }
-
     public memberDTO add(memberDTO memberDTO) {
-        // DTO -> Entity
         Member newMember = memberDTO.toEntity();
         validateDuplicateEmail(newMember);
-        Member member = dataJPAMemberRepository.save(newMember);
-        return memberDTO.of(member);
+        Member savedMember = dataJPAMemberRepository.save(newMember);
+        return memberDTO.of(savedMember);
     }
 
     private void validateDuplicateEmail(Member member) {
@@ -40,28 +32,22 @@ public class MemberService {
         });
     }
 
-
-    // Entity -> DTO
     public Optional<memberDTO> getMemberById(Long memberId) {
         return dataJPAMemberRepository.findById(memberId).map(memberDTO::of);
     }
 
-    // Entity -> DTO
     public Optional<memberDTO> getMemberByUserName(String userName) {
-        Optional<Member> optionalMember = dataJPAMemberRepository.findByName(userName);
-
-        if (optionalMember.isPresent()) {
-            Member findMember = optionalMember.get();
-            return Optional.of(memberDTO.of(findMember));
-        } else {
-            return Optional.empty();
-        }
+        return dataJPAMemberRepository.findByName(userName).map(memberDTO::of);
     }
-
 
     public List<memberDTO> getMembers() {
         List<Member> members = dataJPAMemberRepository.findAll();
-        // Member 엔티티 리스트를 MemberDTO 리스트로 변환
-        return memberDTO.of(members);
+        return members.stream()
+                .map(memberDTO::of)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<memberDTO> getMembersByUserPhoneNumber(String phoneNumber) {
+        return dataJPAMemberRepository.findByMemberDetail_PhoneNumber(phoneNumber).map(memberDTO::of);
     }
 }

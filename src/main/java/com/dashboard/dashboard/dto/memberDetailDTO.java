@@ -7,19 +7,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor  // 기본 생성자 추가
+@Builder
 public class memberDetailDTO {
-    private String description;
-    private String type;
+    private Long memberId;
+    private String address;
+    private String phoneNumber;
 
-    // MemberDetail 엔티티를 DTO로 변환하는 정적 메서드
-    public static memberDetailDTO toDTO(MemberDetail detail) {
+    public static memberDetailDTO of(MemberDetail memberDetail) {
         return memberDetailDTO.builder()
-                .description(detail.getDescription())
-                .type(detail.getPk().getType())  // Pk 객체의 type 필드에 접근
+                .memberId(memberDetail.getMemberId())
+                .address(memberDetail.getAddress())
+                .phoneNumber(memberDetail.getPhoneNumber())
                 .build();
     }
 
+    public MemberDetail toEntity() {
+        return MemberDetail.builder()
+                .memberId(this.memberId)
+                .address(this.address)
+                .phoneNumber(this.phoneNumber)
+                .build();
+    }
 }
