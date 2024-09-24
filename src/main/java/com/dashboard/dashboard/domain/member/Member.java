@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 @Entity
 @Table(name = "member")
 @Getter
@@ -20,6 +21,9 @@ public class Member {
 
     @Column(name = "name")
     private String name;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(name = "email")
     private String email;
@@ -44,3 +48,4 @@ public class Member {
         }
     }
 }
+
