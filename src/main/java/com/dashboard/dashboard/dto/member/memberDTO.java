@@ -29,6 +29,7 @@ public class memberDTO {
     private Long memberId;
     private String name;
     private String email;
+    private String role;
     private memberDetailDTO memberDetail;
 
     public static memberDTO of(Member member) {
@@ -46,6 +47,7 @@ public class memberDTO {
                 .memberId(this.memberId)
                 .name(this.name)
                 .email(this.email)
+                .role(this.role)
                 .build();
 
         if (this.memberDetail != null) {

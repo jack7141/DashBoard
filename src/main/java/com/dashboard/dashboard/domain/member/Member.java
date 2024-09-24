@@ -25,6 +25,9 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String role;
+
     @Column(name = "email")
     private String email;
 
@@ -35,10 +38,11 @@ public class Member {
     private List<Post> posts = new ArrayList<>();
 
     @Builder
-    public Member(Long memberId, String name, String email) {
+    public Member(Long memberId, String name, String email, String role) {
         this.memberId = memberId;
         this.name = name;
         this.email = email;
+        this.role = role;
     }
 
     public void setMemberDetail(MemberDetail memberDetail) {
