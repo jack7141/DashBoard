@@ -9,13 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-
 import java.io.PrintWriter;
 
 @Configuration
@@ -36,6 +39,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // Allow access to Swagger and API docs without authentication
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/swagger-config", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/swagger-config").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/logistics").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/*").permitAll()
@@ -89,4 +94,16 @@ public class SecurityConfig {
         private final HttpStatus status;
         private final String message;
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }

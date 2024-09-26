@@ -2,10 +2,12 @@ package com.dashboard.dashboard.dto.member;
 
 import com.dashboard.dashboard.domain.member.Member;
 import com.dashboard.dashboard.domain.member.MemberDetail;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /*
 * @AllArgsConstructor가 없으면 빌더 패턴에서 문제가 발생하는 이유는
@@ -28,7 +30,12 @@ import lombok.NoArgsConstructor;
 public class memberDTO {
     private Long memberId;
     private String name;
+    @NotBlank
     private String email;
+
+    @NotBlank
+    private String password;
+
     private String role;
     private memberDetailDTO memberDetail;
 
@@ -37,17 +44,19 @@ public class memberDTO {
                 .memberId(member.getMemberId())
                 .name(member.getName())
                 .email(member.getEmail())
+                .role(member.getRole())
                 .memberDetail(member.getMemberDetail() != null ? memberDetailDTO.of(member.getMemberDetail()) : null)
                 .build();
     }
 
 
-    public Member toEntity() {
+    public Member toEntity(PasswordEncoder passwordEncoder) {
         Member member = Member.builder()
                 .memberId(this.memberId)
                 .name(this.name)
                 .email(this.email)
-                .role(this.role)
+                .role(this.role != null ? this.role : "ROLE_USER")
+                .password(this.password != null ? passwordEncoder.encode(this.password) : null)
                 .build();
 
         if (this.memberDetail != null) {

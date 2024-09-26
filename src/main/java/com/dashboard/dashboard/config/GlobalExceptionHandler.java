@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleAllUncaughtException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponseDTO.of(500, "서버 내부 오류가 발생했습니다."));
+                .body(ErrorResponseDTO.of(500, e.getMessage()));
     }
 
     @ExceptionHandler(DuplicateMemberException.class)

@@ -1,6 +1,7 @@
 package com.dashboard.dashboard.domain.member;
 
 import com.dashboard.dashboard.domain.post.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,17 +33,19 @@ public class Member {
     private String email;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore  // Prevent cyclic references
     private MemberDetail memberDetail;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
     @Builder
-    public Member(Long memberId, String name, String email, String role) {
+    public Member(Long memberId, String name, String email, String role, String password) {
         this.memberId = memberId;
         this.name = name;
         this.email = email;
         this.role = role;
+        this.password = password;
     }
 
     public void setMemberDetail(MemberDetail memberDetail) {
