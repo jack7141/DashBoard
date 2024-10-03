@@ -1,6 +1,7 @@
-package com.dashboard.dashboard;
+package com.dashboard.dashboard.config;
 
 import com.dashboard.dashboard.domain.member.Role;
+import com.dashboard.dashboard.jwt.LoginFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,30 +12,50 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import java.io.PrintWriter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
+    private final AuthenticationConfiguration authenticationConfiguration;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
+
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        //csrf disable
         http
-                // 1. Disable CSRF for simplicity (add appropriate handling if required in production)
-                .csrf(csrf -> csrf.disable())
+                .csrf((auth) -> auth.disable());
 
-                // 2. Disable X-Frame-Options header (e.g., for H2 console access)
-                .headers(headers -> headers.frameOptions().disable())
+        //From 로그인 방식 disable
+        http
+                .formLogin((auth) -> auth.disable());
 
+        //http basic 인증 방식 disable
+        http
+                .httpBasic((auth) -> auth.disable());
+
+        http
                 // 3. Define URL authorization rules
                 .authorizeHttpRequests(authz -> authz
                         // Allow access to Swagger and API docs without authentication
@@ -51,7 +72,7 @@ public class SecurityConfig {
                         // Protected resources with role-based access
                         .requestMatchers("/posts/**", "/api/v1/posts/**").hasRole(Role.USER.name())
                         .requestMatchers("/admins/**", "/api/v1/admins/**").hasRole(Role.ADMIN.name())
-
+                        .requestMatchers("/admin").hasRole("ADMIN")
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
@@ -61,6 +82,16 @@ public class SecurityConfig {
                         .authenticationEntryPoint(unauthorizedEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
                 );
+
+        //세션 설정
+        http
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
@@ -98,12 +129,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }
