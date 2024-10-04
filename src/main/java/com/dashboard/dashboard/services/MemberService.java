@@ -1,6 +1,8 @@
 package com.dashboard.dashboard.services;
 
 import com.dashboard.dashboard.domain.member.Member;
+import com.dashboard.dashboard.dto.member.CustomUserDetails;
+import com.dashboard.dashboard.dto.member.LoginReq;
 import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.repository.DataJPAMemberRepository;
 import com.dashboard.dashboard.jwt.JWTUtil;
@@ -8,9 +10,15 @@ import com.exceptons.DuplicateMemberException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +40,22 @@ public class MemberService {
         validateDuplicateEmailAndPhoneNumber(newMember);
         Member savedMember = dataJPAMemberRepository.save(newMember);
         return memberDTO.of(savedMember);
+    }
+
+    public String login(LoginReq LoginReq) {
+        try {
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(LoginReq.getEmail(), LoginReq.getPassword())
+                );
+                CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                String email = customUserDetails.getUsername();
+
+                Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+                String role = authorities.iterator().next().getAuthority();
+                return jwtUtil.createJwt(email, role);
+        } catch (AuthenticationException e) {
+            throw new BadCredentialsException("인증 실패: 잘못된 이메일 또는 비밀번호.");
+        }
     }
 
 

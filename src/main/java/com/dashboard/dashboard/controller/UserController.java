@@ -1,5 +1,6 @@
 package com.dashboard.dashboard.controller;
 
+import com.dashboard.dashboard.dto.member.LoginReq;
 import com.dashboard.dashboard.dto.responsedto.DataResponseDTO;
 import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.services.MemberService;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,6 +44,7 @@ public class UserController {
                     )
             }
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public DataResponseDTO<memberDTO> getUser(
             @Parameter(description = "조회할 사용자의 아이디", example = "1")
@@ -52,13 +55,14 @@ public class UserController {
         return DataResponseDTO.of(member);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public DataResponseDTO<List<memberDTO>> getUsers() {
         List<memberDTO> members = memberService.getMembers();
         return DataResponseDTO.of(members);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("/phone/{numbers}")
     public DataResponseDTO<memberDTO> getUsersPhoneNumbers(
             @Parameter(description = "조회할 사용자의 핸드폰 번호", example = "1")
@@ -73,6 +77,12 @@ public class UserController {
     public ResponseEntity<DataResponseDTO<memberDTO>> createUser(@RequestBody memberDTO createUserDTO) {
         memberDTO newMember = memberService.register(createUserDTO);
         return ResponseEntity.ok(DataResponseDTO.of(newMember, "회원 가입이 성공적으로 완료되었습니다."));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<DataResponseDTO<String>> login(@RequestBody LoginReq LoginReq) {
+        String token = memberService.login(LoginReq);
+        return ResponseEntity.ok(DataResponseDTO.of("Bearer " + token, "로그인이 성공적으로 완료되었습니다."));
     }
 
 
