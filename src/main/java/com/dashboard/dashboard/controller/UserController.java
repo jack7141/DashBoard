@@ -1,6 +1,5 @@
 package com.dashboard.dashboard.controller;
 
-import com.dashboard.dashboard.dto.member.LoginDTO;
 import com.dashboard.dashboard.dto.responsedto.DataResponseDTO;
 import com.dashboard.dashboard.dto.member.memberDTO;
 import com.dashboard.dashboard.services.MemberService;
@@ -76,16 +75,5 @@ public class UserController {
         return ResponseEntity.ok(DataResponseDTO.of(newMember, "회원 가입이 성공적으로 완료되었습니다."));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<DataResponseDTO<String>> login(@RequestBody LoginDTO LoginDTO) {
-        String token = memberService.login(LoginDTO);
-        return ResponseEntity.ok(DataResponseDTO.of("Bearer " + token, "로그인이 성공적으로 완료되었습니다."));
-    }
-//
-//    @PostMapping("/logout")
-//    public ResponseEntity<DataResponseDTO<memberDTO>> createUser(@RequestBody memberDTO createUserDTO) {
-//        memberDTO newMember = memberService.register(createUserDTO);
-//        return ResponseEntity.ok(DataResponseDTO.of(newMember, "로그아웃이 성공적으로 완료되었습니다."));
-//    }
 
 }

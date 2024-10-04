@@ -17,7 +17,6 @@ public class CustomUserDetails implements UserDetails {
     private final Member member;
 
     public CustomUserDetails(Member userEntity) {
-
         this.member = userEntity;
     }
 

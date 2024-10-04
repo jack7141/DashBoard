@@ -2,26 +2,18 @@ package com.dashboard.dashboard.config;
 
 import com.dashboard.dashboard.domain.member.Role;
 import com.dashboard.dashboard.jwt.LoginFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.dashboard.dashboard.jwt.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.PrintWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,10 +21,18 @@ public class SecurityConfig {
 
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
+    //JWTUtil 주입
+    private final JWTUtil jwtUtil;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 
         this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -67,22 +67,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api-docs/*").permitAll()
                         // Publicly accessible paths
-                        .requestMatchers("/", "/login/**").permitAll()
+                        .requestMatchers("/", "/login").permitAll()
 
                         // Protected resources with role-based access
                         .requestMatchers("/posts/**", "/api/v1/posts/**").hasRole(Role.USER.name())
                         .requestMatchers("/admins/**", "/api/v1/admins/**").hasRole(Role.ADMIN.name())
+
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
-                )
-
-                // 4. Handle 401 and 403 errors with custom JSON responses
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(unauthorizedEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
                 );
-
         //세션 설정
         http
                 .sessionManagement((session) -> session
@@ -90,45 +84,8 @@ public class SecurityConfig {
 
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
-    // Custom handler for 401 Unauthorized errors
-    private final AuthenticationEntryPoint unauthorizedEntryPoint = (request, response, authException) -> {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized access. Please log in.");
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        String json = new ObjectMapper().writeValueAsString(errorResponse);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        PrintWriter writer = response.getWriter();
-        writer.write(json);
-        writer.flush();
-    };
-
-    // Custom handler for 403 Forbidden errors
-    private final AccessDeniedHandler accessDeniedHandler = (request, response, accessDeniedException) -> {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, "Access denied. You do not have permission to access this resource.");
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        String json = new ObjectMapper().writeValueAsString(errorResponse);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        PrintWriter writer = response.getWriter();
-        writer.write(json);
-        writer.flush();
-    };
-
-    // Custom error response class
-    @Getter
-    @RequiredArgsConstructor
-    public static class ErrorResponse {
-        private final HttpStatus status;
-        private final String message;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
 }
