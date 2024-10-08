@@ -23,7 +23,6 @@ public class Member {
     @Column(name = "name")
     private String name;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)

@@ -81,6 +81,12 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .oauth2Login((auth) -> auth
+                        .loginPage("/oauth-login/login")
+                        .defaultSuccessUrl("/swagger-ui/index.html")
+                        .failureUrl("/oauth-login/login")
+                        .permitAll()
+                )
                 // 4. Handle 401 and 403 errors with custom JSON responses
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(unauthorizedEntryPoint)
