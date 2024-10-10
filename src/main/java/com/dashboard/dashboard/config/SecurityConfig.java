@@ -70,22 +70,26 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
         http
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/swagger-config", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/google-login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/google").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/auth/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/google/callback").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/auth/{socialLoginType}/callback").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/google").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api-docs/*").permitAll()
+                        .requestMatchers("/google-login").permitAll()  // Allow unauthenticated access to Google login
+                        .requestMatchers("/oauth2/authorization/google").permitAll()
                         .requestMatchers("/posts/**", "/api/v1/posts/**").hasRole(Role.USER.name())
                         .requestMatchers("/admins/**", "/api/v1/admins/**").hasRole(Role.ADMIN.name())
 
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                )
-                .oauth2Login((auth) -> auth
-                        .loginPage("/oauth-login/login")
-                        .defaultSuccessUrl("/swagger-ui/index.html")
-                        .failureUrl("/oauth-login/login")
-                        .permitAll()
                 )
                 // 4. Handle 401 and 403 errors with custom JSON responses
                 .exceptionHandling(exceptions -> exceptions

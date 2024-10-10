@@ -1,9 +1,14 @@
 package com.dashboard.dashboard.controller;
 
+import com.dashboard.dashboard.config.Constant;
 import com.dashboard.dashboard.dto.member.LoginReq;
+import com.dashboard.dashboard.dto.oath2.GetSocialOAuthRes;
 import com.dashboard.dashboard.dto.responsedto.DataResponseDTO;
 import com.dashboard.dashboard.dto.member.memberDTO;
+import com.dashboard.dashboard.jwt.JWTUtil;
+import com.dashboard.dashboard.services.CustomOauth2UserService;
 import com.dashboard.dashboard.services.MemberService;
+import com.dashboard.dashboard.services.OAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,18 +16,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -32,6 +42,8 @@ import java.util.List;
 public class UserController {
 
     private final MemberService memberService;
+    private final OAuthService oAuthService;
+
 
     @Operation(
             summary = "사용자 조회",
@@ -88,5 +100,21 @@ public class UserController {
     public ResponseEntity<DataResponseDTO<String>> login(@RequestBody LoginReq LoginReq) {
         String token = memberService.login(LoginReq);
         return ResponseEntity.ok(DataResponseDTO.of("Bearer " + token, "로그인이 성공적으로 완료되었습니다."));
+    }
+
+    @GetMapping("/auth/{socialLoginType}")
+    public void socialLoginRedirect(@PathVariable(name="socialLoginType") String SocialLoginPath) throws IOException {
+        Constant.SocialLoginType socialLoginType= Constant.SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
+        oAuthService.request(socialLoginType);
+    }
+
+    @GetMapping(value = "/{socialLoginType}/callback")
+    public ResponseEntity<DataResponseDTO<GetSocialOAuthRes>> callback (
+            @PathVariable(name = "socialLoginType") String socialLoginPath,
+            @RequestParam(name = "code") String code)throws IOException {
+        System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :"+ code);
+        Constant.SocialLoginType socialLoginType= Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
+        GetSocialOAuthRes getSocialOAuthRes=oAuthService.oAuthLogin(socialLoginType,code);
+        return ResponseEntity.ok(DataResponseDTO.of(getSocialOAuthRes, "회원 가입이 성공적으로 완료되었습니다."));
     }
 }
